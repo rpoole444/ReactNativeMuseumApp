@@ -2,25 +2,56 @@ import { StatusBar } from 'expo-status-bar';
 import { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, Image } from 'react-native';
 
+interface Creator {
+  description: string;
+}
+
+interface Images {
+  web: {
+    url: string;
+  }
+}
+
+interface Artwork { 
+  creators: Creator[];
+  images: Images;
+  title: string;
+}
+
 const App = () => {
-const [data, setData] = useState('')
+const [data, setData] = useState<Artwork | null>(null)
 const [loading, setLoading] = useState(true)
+
+
 
 useEffect(() => {
  fetch('http://localhost:3001/api')
     .then(res => res.json())
-    .then(data => setData(data))
+    .then(data => setData(data.data[0]))
     .catch(error => console.error(error))
     .finally(() => setLoading(false))
 }, [])
 
-console.log(data)
+console.log("museumData: ", data)
   return (
+    <>
     <View style={styles.container}>
       <Text>Welcome To Reid's First Mobile app!</Text>
-      <Image source={logo} style={styles.image}/>
-      <StatusBar style="auto" />
+      {loading ? (
+        <Text>Loading...</Text>
+        ) : (
+          <View>
+          <Text> Artist's Paintings </Text>
+          <Text>{data?.creators[0].description}</Text> 
+          <Image source={{uri: data?.images.web.url}} style={styles.image}/>
+          <Text>{data?.title}</Text>
+          <StatusBar style="auto" />
+        </View>
+      )}
+    <View>
     </View>
+    </View>
+    </>
   );
 }
 
