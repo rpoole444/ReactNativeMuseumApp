@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, Image } from 'react-native';
+import { StyleSheet, Text, View, Image, ScrollView } from 'react-native';
 
 interface Creator {
   description: string;
@@ -29,7 +29,7 @@ const [loading, setLoading] = useState(true)
 
 const allArtists = data.map((artist, index) => {
   return (
-      <View style={styles.container} key={index}>
+      <View style={styles.artworkContainer} key={index}>
         <Text style={styles.text}>Creator: {artist.creators[0]?.description}</Text>
         {artist.images && artist.images.web && artist.images.web.url && 
           <Image source={{uri: artist.images.web.url}} style={styles.image}/>
@@ -48,16 +48,16 @@ useEffect(() => {
     .finally(() => setLoading(false))
 }, [])
 
-console.log("museumData: ", data)
+// console.log("museumData: ", data)
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
       <Text>Welcome To Reid's First Mobile app!</Text>
       {loading ? (
         <Text>Loading...</Text>
         ) : (
          allArtists 
       )}
-    </View>
+    </ScrollView>
     
   );
 }
@@ -72,13 +72,18 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
+  },
+  contentContainer: {
+    alignItems: 'center'
+  },
+  artworkContainer: {
+    backgroundColor: '#fff',
     alignItems: 'center',
     margin: 20,
-    justifyContent: 'center',
   },
   image: {
-    width: logo.width,
-    height: logo.height,
+    width: 200,
+    height: 200,
     marginTop: 30,
   },
   text: {
