@@ -18,40 +18,47 @@ interface Artwork {
   title: string;
 }
 
+interface APIResponse {
+  data: Artwork[];
+}
+
 const App = () => {
-const [data, setData] = useState<Artwork | null>(null)
+const [data, setData] = useState<Artwork[]>([])
 const [loading, setLoading] = useState(true)
 
 
+const allArtists = data.map((artist, index) => {
+  return (
+      <View style={styles.container} key={index}>
+        <Text style={styles.text}>Creator: {artist.creators[0]?.description}</Text>
+        {artist.images && artist.images.web && artist.images.web.url && 
+          <Image source={{uri: artist.images.web.url}} style={styles.image}/>
+        }
+        <Text>{artist.title}</Text>
+        <StatusBar style="auto" />
+      </View>
+  )
+})
 
 useEffect(() => {
  fetch('http://localhost:3001/api')
-    .then(res => res.json())
-    .then(data => setData(data.data[0]))
+    .then(res => res.json() as Promise<APIResponse>)
+    .then(data => setData(data.data))
     .catch(error => console.error(error))
     .finally(() => setLoading(false))
 }, [])
 
 console.log("museumData: ", data)
   return (
-    <>
     <View style={styles.container}>
       <Text>Welcome To Reid's First Mobile app!</Text>
       {loading ? (
         <Text>Loading...</Text>
         ) : (
-          <View>
-          <Text> Artist's Paintings </Text>
-          <Text>{data?.creators[0].description}</Text> 
-          <Image source={{uri: data?.images.web.url}} style={styles.image}/>
-          <Text>{data?.title}</Text>
-          <StatusBar style="auto" />
-        </View>
+         allArtists 
       )}
-    <View>
     </View>
-    </View>
-    </>
+    
   );
 }
 
@@ -59,19 +66,23 @@ console.log("museumData: ", data)
 const logo = {
   uri: 'https://cdn.sanity.io/images/cctd4ker/production/73a42b4ea1644b2085acaad2896bfa4699687664-2320x920.jpg?rect=405,0,1490,920&w=3840&q=75&fit=clip&auto=format',
   width: 400,
-  height: 200,
+  height: 400,
 }
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
     alignItems: 'center',
+    margin: 20,
     justifyContent: 'center',
   },
   image: {
     width: logo.width,
     height: logo.height,
     marginTop: 30,
+  },
+  text: {
+    marginTop: 30
   }
 });
 
